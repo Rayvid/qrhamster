@@ -45,8 +45,20 @@
 .card .section:not(:first-child){
   margin-left:15px;
 }
-.card .section.user{
+.section.user-section{
   flex-basis:35%;
+}
+.user{
+  display:flex;
+  align-items:center;
+}
+.card .section .fields.inline{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.card .section .fields.inline .field{
+  margin-right:3em;
 }
 .card .section .field{
   margin:8px 0px;
@@ -71,8 +83,10 @@
 .sub-events{
   padding-top:4px;
   padding-bottom:4px;
-  display:flex;
-  flex-wrap:wrap;
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  /* display:flex;
+  flex-wrap:wrap; */
 }
 .chip{
   border-radius:4px;
@@ -94,9 +108,43 @@ span.timestamp{
   font-size:12px;
 }
 
+.rating{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.rating>.star:not(:first-child){
+  margin-left:5px;
+}
+.star{
+  width:20px;
+  height:20px;
+}
+
 
 @keyframes rotate{
   from{transform:rotate(0deg)}
   to{transform:rotate(360deg)}
+}
+
+@media screen and (max-width:576px){/*phone*/
+
+}
+@media screen and (max-width:768px){
+  /*tablet*/
+  .card{
+    width:100%;
+  }
+  .card .section .field > .value{
+    font-size:12px;
+  }
+  .sub-events{
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+@media screen and (max-width:1024px){
+  .attendee{
+    flex-direction:column;
+  }
 }
 
