@@ -39,7 +39,7 @@ async function clearTemp(): Promise<void> {
 }
 
 async function downloadLatestFile(userID: string): Promise<string | null> {
-    const [files] = await bucket.getFiles({prefix: `users/${userID}/pdf`})
+    const [files] = await bucket.getFiles({prefix: `users/${userID}/pdf`});
 
     let maxTimestamp = -1;
     let selectedFile = undefined;
@@ -60,30 +60,32 @@ async function downloadLatestFile(userID: string): Promise<string | null> {
 
 async function uploadQR(userID: string, timestamp: string): Promise<string> {
     const pdfTicketPath = path.resolve(__dirname, './temp/', `${timestamp}.pdf`);
-    const base64image = await fromPath(pdfTicketPath, {
+    await fromPath(pdfTicketPath, {
         format: 'png',
-        quality: 100,
-    })(1, true) as ToBase64Response;
+        savePath: path.resolve(__dirname, './temp'),
+        saveFilename: 'qr1.png'
+    })(1);
 
-    const dataUri = base64image?.base64;
-    if (dataUri === undefined || base64image.size == '0') {
-        throw(new Error('Could not extract image base64'));
-    }
-
-    const buffer = Buffer.from(dataUri, 'base64');
-    const png = PNG.sync.read(buffer);
-
-    const qr = jsQR(Uint8ClampedArray.from(png.data), png.width, png.height);
-    if (qr === null) {
-        throw(new Error('Could not scan qr code'));
-    }
-    const qrPath = path.resolve(__dirname, 'temp/qr.png')
-    await QRCode.toFile(qrPath, qr.data);
-    const resp = await bucket.upload(qrPath, {
-        destination: `users/${userID}/qr/${timestamp}_${qr.data}.png`,
-        metadata: {contentType: 'image/png'}
+    return new Promise((resolve, reject) => {
+        fs.createReadStream(path.resolve(__dirname, './temp/qr1.png'))
+            .pipe(new PNG())
+            .on('parsed', async function() {
+                const qr = jsQR(Uint8ClampedArray.from(this.data), this.width, this.height);
+                if (qr === null) {
+                    throw(new Error('Could not scan qr code'));
+                }
+                const qrPath = path.resolve(__dirname, './temp/qr2.png');
+                await QRCode.toFile(qrPath, qr.data);
+                const resp = await bucket.upload(qrPath, {
+                    destination: `users/${userID}/qr/${timestamp}_${qr.data}.png`,
+                    metadata: {contentType: 'image/png'}
+                });
+                resolve(resp[0].metadata.mediaLink);
+            })
+            .on('error', function(err) {
+                reject(err);
+            });
     });
-    return (resp[0].metadata.mediaLink);
 }
 
 async function createNftMetadata(userId: string, timestamp: string, mediaLink: string): Promise<void>{
@@ -131,11 +133,3 @@ const requestListener = async (req: http.IncomingMessage, res: http.ServerRespon
 http.createServer(requestListener).listen(5050);
 //run command
 //node --trace-warnings --experimental-modules --loader ts-node/esm ./backend/src/main.ts 
-
-
-
-
-
-
-
-
