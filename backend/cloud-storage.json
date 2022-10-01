@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "qrhamsters-app",
+  "private_key_id": "59567c1e7cc06ed67ded6f55dda41771854d6e6e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCxOlNfmUuPcpEY\nXqvISJ0GIZmocF8r8Me9ydA63JJF2RBYyYFO7EmWMpnHtqpr6GX30RZXCVB/3E3O\nJfw9c0GB5IqlbgYTPAqVKfusLx9cxdgcUjgSyPZZTxGxdIiut7L0ni5V+NHO5tVK\n/o7VjgXVhbtzgkObmg8XTOA6VuVpRLWp/7jJjqezpxUcIC6ZoXlxksZuTgrBIRxy\nWJytcZax4bm7UX3FHJES3FP/N8T+i7lKB6zkgKDn4C0LiOy8RhWemD/2LsgopFzp\nhswG7bM3LR9GGKEUtj5p6w21EFOKZgQ6CpW+YuaFTit4ssq7Iqgynsbkm9soAslL\ngJQSbUwDAgMBAAECggEAUKROAI9zustyKykUuDcWQA506RhsrcVLVdfpKIdqBV9O\nGWBjNsK8fxv6Lk43QI+IKlmY9TSXTP605osROfLiSVTxI3IrUIA+/n2Sd1gfyKp7\nefONcTrBIYUhc2InuXx78OOzCMqFyUPupMesvY54qB5IW7hXxAs3N65yzwjwLVPk\nenoTxkMRq3JNbV1TEEQETFAmyGBozbgd/pWvLw1A4im1e3bcKU2zXlDUsV/kZxFs\npqgkIjB+vzTN1w0QQcAyF2JBx8lewVQSO9wSRqjob1FEBq7Gh4aI/w8UuBf02bJo\nSM3AIn62mKUmGGyzOv/4Gf99F2JQR5eeQX6Gu2ZqxQKBgQDmKvcIh97BZUlAQgrk\n8O2N5jsPwQIf4rEOf6uvEu8ndi6cQhj+PYRtR8GDii4lTKzOvRuHj4wEsw8GRMK/\nJX15mZwnc1hMGVQecIqxdHJh77PWkwJwO9Xbu0oX5H0yqXjETIb6aRQ+5WsKnpb6\nY8wmRsIExXp1LA5o8+PHelVD3wKBgQDFHlKSD7DwYDbgC36Yyr6nm0E6vDB5lG8a\nomgzdru6tekf4DDzfYjCREsQg7H68SDsDVakDDmPCSEIHPg5ZzQOkH3fnrK7t8s/\n1XgrL5a0xziPnSilZieCb6aW4jb7ExfxC6RMPp1qEJ12IKEg6lljBWASx70yRVH/\ngYDfCODcXQKBgQCCcLUBY6btKU6jGQp9hsDKG0E7g2GF2n4HPnl4xZ09Wu+9ZIQv\niYOEPxc/Sc8vGk4Q+AEjCUoL28JXBh7sHv4GLPTfMrJGplAS1Cr1uI2eTS85GqVW\nH8LqPTEXa0k8reigLtKMFYMAxhmssgXULzyiMJWCCLyGrQoZlqZvBThPNwKBgQDB\n5avvRUQVj28rP+NNxNF56Txm3EsKrToFBxBc30SWyu4AjvVX7noiLi9wlTrzz1FF\nIXHCeMv9qUs2wdhiDuSkFvnaiC7kfEyQBBnq0Sr7tKQskLk0yaG/qrhB30+Z9hQs\n5fi9jzIk7ScW1c3ppNw8jUMN9jBjTND19pufyQn3eQKBgCS/4Vv/dbqWVAOU5tGv\nNRzaXMVB8YyEv9IvK5yob0tlsI4Eue6dDD34f1BDc3bdgW5ThsWDhWB/ae3Dwekf\n/FCgS/8qfdc2RVNj7ulOr9nJXlI5ksd4kh8QlOFu1YR9jTot7/i5qHoEJQRny9to\n5+wWLJHC1THOhHBQ6zQv1eGZ\n-----END PRIVATE KEY-----\n",
+  "client_email": "backend-account@qrhamsters-app.iam.gserviceaccount.com",
+  "client_id": "110533725154165208964",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/backend-account%40qrhamsters-app.iam.gserviceaccount.com"
+}
