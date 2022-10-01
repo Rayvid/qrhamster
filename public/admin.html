@@ -76,12 +76,13 @@
         
         const attendees = document.querySelector('.attendees');
         data.forEach(({id,email,photo,visitedSections,...rest})=>{
+          console.log(photo);
           attendees.innerHTML += `
             <tr class="attendee">
               <td class="section user-section">
                 <div class="section-content">
                   <div class="user">
-                    <img class="photo" src="${photo === "null" ? 'images/anon.webp' : photo}" />
+                    <img class="photo" src="${photo ? photo : 'images/anon.webp'}" />
                     <div class="data">
                     ${field("Attendee",`
                       <div><b>ID:</b> ${id}</div>
