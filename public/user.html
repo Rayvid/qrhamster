@@ -229,12 +229,14 @@
               let setPromise = Promise.resolve();
               if (doc.exists) {
                 visitedSections = doc.data().visitedSections || [];
+                setSections(visitedSections);
               } else {
                 setPromise = db.collection("users").doc(user.uid).set({
                   first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
                   photo: null,
                   visitedSections: []
                 });
+                setSections([]);
               }
 
               setPromise.then(() => {
