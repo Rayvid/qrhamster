@@ -25,8 +25,7 @@
     <script src="./assets/js/main.js"></script>
     <script src="./assets/js/ui-modals.js"></script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-    <!-- end of theme -->
+    <!-- End of theme -->
 
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
@@ -41,6 +40,16 @@
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
 
     <script type="text/javascript">
+      let qsParams = new URLSearchParams(window.location.search);
+      let section = parseInt(qsParams.get('section'));
+
+      let redirUrl = new URL(window.location);
+      if (redirUrl.pathname.indexOf('.html') > 0) {
+        redirUrl.pathname = '/auth.html';
+      } else {
+        redirUrl.pathname = '/auth';
+      }
+
       const firebaseConfig = {
         apiKey: "AIzaSyBe6QaZqUU5UNK8SdE3QAnQwFv6pXCpldw",
         authDomain: "qrhamsters-app.firebaseapp.com",
@@ -189,7 +198,7 @@
         },{
           merge:true
         })
-        location.reload();
+        window.location.href = redirUrl;
        // const usersRef = db.collection('users')
       })
       $(function(){
@@ -214,25 +223,45 @@
           document.getElementById('user_id').innerText = user.uid;
           userUid = user.uid;
 
+          var visitedSections = [];
           var docRef = db.collection("users").doc(user.uid);
           docRef.get().then((doc) => {
-            if (doc.exists) {
-              console.log("Document data:", doc.data());
-              setSections(doc.data()?.visitedSections);
-            } else {
-              db.collection("users").doc(user.uid).set({
-                first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
-                photo: null,
-                visitedSections: []
-              });
-              setSections([]);
-            }
+              let setPromise = Promise.resolve();
+              if (doc.exists) {
+                visitedSections = doc.data().visitedSections || [];
+              } else {
+                setPromise = db.collection("users").doc(user.uid).set({
+                  first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
+                  photo: null,
+                  visitedSections: []
+                });
+              }
+
+              setPromise.then(() => {
+                if (section > 0 && section < 6) {
+                  db.collection("users").doc(user.uid).get().then((doc) => {
+                    sections = doc.data().visitedSections || [];
+                    if (!sections.find((val) => val.section == section)) {
+                      db.collection("users").doc(user.uid).update({
+                        visitedSections: firebase.firestore.FieldValue.arrayUnion({
+                          section,
+                          timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0)
+                        })
+                      });
+                    }
+                  }).catch((error) => {
+                    window.location.href = redirUrl;
+                  });
+              }
+            }).catch((error) => {
+              window.location.href = redirUrl;
+            });
           }).catch((error) => {
-              console.log("Error getting document:", error);
+            window.location.href = redirUrl;
           });
 
         } else {
-          window.location.href = '/index.html';
+          window.location.href = redirUrl;
         }
       });
     </script>
@@ -242,9 +271,6 @@
       var files = [];
       document.getElementById("files").addEventListener("change", function(e) {
         files = e.target.files;
-        for (let i = 0; i < files.length; i++) {
-          console.log(files[i]);
-        }
       });
       
       document.getElementById("send").addEventListener("click", function() {
