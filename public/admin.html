@@ -9,8 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.4/build/global/luxon.min.js"></script>
+    <script src="js/star.js"></script>
 
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/admin.css" />
     <style>
       body {
         background: #f5f5f9;
@@ -55,6 +56,14 @@
       function formatTimestamp(timestamp){
         return DateTime.fromSeconds(timestamp).toFormat('yyyy-MM-dd HH:mm:ss')
       }
+      function field(name,value,classname=""){
+        return `
+          <div class="field ${classname}">
+            <div class="name">${name}</div>
+            <div class="value">${value}</div>
+          </div>
+        `;
+      }
 
       const usersRef = firebase.firestore().collection("users");
       usersRef.get().then((snapshot) => {
@@ -69,45 +78,44 @@
         data.forEach(({id,email,photo,visitedSections,...rest})=>{
           attendees.innerHTML += `
             <tr class="attendee">
-              <td class="section">
+              <td class="section user-section">
                 <div class="section-content">
-                  <img class="photo" src="${photo === "null" ? 'images/anon.webp' : photo}" />
-                </div>
-              </td>
-              <td class="section user">
-                <div class="section-content">
-                  <div class="field">
-                    <div class="name">Attendee</div>
-                    <div class="value">
+                  <div class="user">
+                    <img class="photo" src="${photo === "null" ? 'images/anon.webp' : photo}" />
+                    <div class="data">
+                    ${field("Attendee",`
                       <div><b>ID:</b> ${id}</div>
                       ${email ? `<div><b>E-mail:</b> ${email}</div>` : ''}
-                  </div>
-                  ${rest.first_checkin_timestamp ? `
-                    <div class="field">
-                      <div class="name">First check-in</div>
-                      <div class="value">
-                        ${formatTimestamp(rest.first_checkin_timestamp.seconds)}
+                    `)}
+                    ${rest.first_checkin_timestamp ? field("First check-in",formatTimestamp(rest.first_checkin_timestamp.seconds)):""}
                     </div>
-                  `:""}
+                  </div>
                 </div>
               </td>
               <td class="section flex">
-                <div class="field">
-                  <div class="name">
-                    Visited sub-events
+                ${field("Visited sub-events",`
+                <div class="sub-events">
+                    ${sections.map((section,index)=>{
+                      const attended = visitedSections?.find(visitedSection=>visitedSection.section === index+1);
+                      if(attended)
+                        return `<div class="chip success">
+                          <div class="fields inline">
+                            ${field("Sub-event",section)}
+                            ${field("Attended on",formatTimestamp(attended.timestamp.seconds))}
+                            ${attended.rating ? field("Rating",`<div class="rating">${Array.from(Array(5)).map((_,idx)=>createStar(idx<attended.rating ? "gold":undefined)).join("")}</div>`):""}
+                          </div>
+                        </div>`;
+                                   
+                      else
+                        return `<div class="chip error">
+                          <div class="fields inline">
+                            ${field("Sub-event",section)}
+                            ${field("Attended on","-")}
+                          </div>
+                        </div>`;
+                    }).join("")}
                   </div>
-                  <div class="value">
-                    <div class="sub-events">
-                      ${sections.map((section,index)=>{
-                        const attended = visitedSections?.find(visitedSection=>visitedSection.section === index+1);
-                        if(attended)
-                          return `<div class="chip success">✅ <b>${section}</b> - Attended on ${formatTimestamp(attended.timestamp.seconds)}</div>` 
-                        else
-                          return `<div class="chip error">❌ ${section}</div>`
-                      }).join("")}
-                    </div>
-                  </div>
-                </div>
+                `)}
               </td>
             </tr>
           `;
