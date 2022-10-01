@@ -10,10 +10,12 @@
     <link rel="stylesheet" href="./assets/vendor/css/core.css" class="template-customizer-core-css" />
     <link rel="stylesheet" href="./assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="./assets/css/demo.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
 
     <!-- Helpers -->
     <script src="./assets/vendor/js/helpers.js"></script>
     <script src="./assets/js/config.js"></script>
+    
 
     <!-- Core JS -->
     <script src="./assets/vendor/libs/jquery/jquery.js"></script>
@@ -30,6 +32,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.4/build/global/luxon.min.js"></script>
+    <script src="js/rating.js"></script>
+    <script src="js/utils.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth__lt.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
@@ -62,69 +68,169 @@
         <progress value="0" max="100" id="progress"></progress>
       </div>
     </div>
+    <div class="card eventSections">
+      <h5 class="card-header">Renginio zonos</h5>
+      <div id="loader"></div>
+    </div>
 
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
-      Launch modal
-    </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="basicModal" tabindex="-1" style="display: none;" aria-hidden="true">
+    <!-- Rating modal -->
+    <div class="modal fade" id="rateModal" tabindex="-1" style="display: none;" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
+            <h5 class="modal-title">Įvertinti renginio zoną</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <h6 class="mb-0" id="selectedSection">-</h5>
             <div class="row">
               <div class="col mb-3">
-                <label for="nameBasic" class="form-label">Name</label>
-                <input type="text" id="nameBasic" class="form-control" placeholder="Enter Name">
+                <label for="rating" class="form-label">Įvertinimas</label>
+                <div id="rating"></div>
               </div>
             </div>
-            <div class="row g-2">
-              <div class="col mb-0">
-                <label for="emailBasic" class="form-label">Email</label>
-                <input type="text" id="emailBasic" class="form-control" placeholder="xxxx@xxx.xx">
-              </div>
-              <div class="col mb-0">
-                <label for="dobBasic" class="form-label">DOB</label>
-                <input type="text" id="dobBasic" class="form-control" placeholder="DD / MM / YY">
-              </div>
+            <div>
+              <label for="ratingComment" class="form-label">Komentaras</label>
+              <textarea class="form-control" id="ratingComment" rows="3" placeholder="Jūsų komentaras..."></textarea>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-              Close
+              Uždaryti
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-primary saveReview" data-bs-dismiss="modal">Išsaugoti</button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Toasts -->
+    <div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-0 start-0 hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+      <div class="toast-header">
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+      
+      </div>
+    </div>
+    <script>
+      function showToast(message){
+        const toastDiv = $('.toast');
+        toastDiv.find(".toast-body").text(message);
+        new bootstrap.Toast(toastDiv).show();
+      }
+    </script>
+
+    <!-- Event sections -->
+    <script>
+      const sections = [
+        "Keynote",
+        "Lunch",
+        'Workshop "Legal"',
+        "Lounge area",
+        "Afterparty",
+      ];
+      let selectedSection = null;
+      let selectedRating = 0;
+      function setSections(data){
+        $('.eventSections').find('#loader').remove()
+        if(!data.length) return $('.eventSections').append("Nuskaičius renginyje esančių zonų QR kodus, jos atsiras čia!");
+        $('.eventSections').append(`
+          <div class="table-responsive text-nowrap">
+            <table class="table">  
+              <thead>
+                <tr>
+                  <th>Zona</th>
+                  <th>Registracijos laikas</th>
+                  <th>Įvertinimas</th>
+                </tr>
+              </thead>
+              <tbody class="table-border-bottom-0" />
+            </table>
+          </div>
+        `)
+        data.forEach(({section,timestamp,rating})=>{
+          $(`<tr>
+              <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>${sections[section-1]}</strong></td>
+              <td>${formatTimestamp(timestamp.seconds)}</td>
+              <td>
+                ${rating ? `
+                  <div class="stars">
+                    ${Array.from(Array(5)).map((_,idx)=>createStar(idx < rating.rating ? "gold" : "grey")).join("")}
+                  </div>
+                  `
+                : `
+                  <button type="button" class="btn btn-primary review" data-bs-toggle="modal" data-bs-target="#rateModal">
+                    <span class="tf-icons bx bx-star"></span> Įvertinti
+                  </button>
+                `}
+              </td>
+          </tr>`).data({section}).appendTo($('.eventSections').find("tbody"))
+        })
+      }
+
+      $(document).on('click','.review',function(){
+        selectedSection = $(this).closest('tr').data('section');
+        $('#selectedSection').html(`Pasirinkta zona: ${sections[selectedSection-1]}`)
+      })
+      $(document).on('click','.saveReview',async function(){
+        if(sections[selectedSection-1] === undefined) return showToast("Pasirinkta neteisinga zona.");
+        if(selectedRating < 1 || selectedRating > 5) return showToast("Pasirinkite įvertinimą!");
+        const comment = $('#ratingComment').val() || null;
+        
+        if(!userUid) return;
+        const existingSections = (await db.collection('users').doc(userUid).get())?.data();
+        existingSections.visitedSections.find(section=>section.section === selectedSection).rating = {
+          rating:selectedRating,
+          comment
+        }
+        await db.collection('users').doc(userUid).set({
+          visitedSections:existingSections.visitedSections
+        },{
+          merge:true
+        })
+        location.reload();
+       // const usersRef = db.collection('users')
+      })
+      $(function(){
+        $("#rating").rating({
+          "emptyStar":"tf-icons bx bx-star",
+          "halfStar":"tf-icons bx bxs-star-half",
+          "filledStar":"tf-icons bx bxs-star",
+          "click":e=>{
+            selectedRating = e.stars;
+          }
+        });
+      });
+
+    </script>
+
     <!-- Firebase -->
     <script>
+      let userUid = null;
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           // User logged in already or has just logged in.
           document.getElementById('user_id').innerText = user.uid;
+          userUid = user.uid;
 
           var docRef = db.collection("users").doc(user.uid);
           docRef.get().then((doc) => {
-              if (doc.exists) {
-                  console.log("Document data:", doc.data());
-              } else {
-                db.collection("users").doc(user.uid).set({
-                  first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
-                  photo: null,
-                  visitedSections: []
-                });
-              }
+            if (doc.exists) {
+              console.log("Document data:", doc.data());
+              setSections(doc.data()?.visitedSections);
+            } else {
+              db.collection("users").doc(user.uid).set({
+                first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
+                photo: null,
+                visitedSections: []
+              });
+              setSections([]);
+            }
           }).catch((error) => {
               console.log("Error getting document:", error);
           });
+
         } else {
           window.location.href = '/index.html';
         }
