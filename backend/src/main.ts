@@ -1,18 +1,19 @@
 import { fromPath } from 'pdf2pic';
 import * as path from 'path'
 import * as fs from 'fs'
-import { Buffer } from 'buffer';
+import { Blob, Buffer } from 'buffer';
 import { ToBase64Response } from 'pdf2pic/dist/types/toBase64Response'
 import { PNG } from 'pngjs';
 import jsQR from 'jsqr';
 import { fileURLToPath } from 'url';
-import QRCode from 'qrcode';
+import QRCode, { toString } from 'qrcode';
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getStorage } from 'firebase-admin/storage';
 
 import * as http from 'http';
 import * as url from 'url';
+import { time } from 'console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,11 +54,12 @@ async function downloadLatestFile(userID: string): Promise<string | null> {
         return null;
     }
     await selectedFile.download({destination: path.resolve(__dirname, `./temp/${maxTimestamp}.pdf`)});
-    return `${maxTimestamp}.pdf`
+    return maxTimestamp.toString();
 }
 
-async function uploadQR(userID: string, pdfID: string) {
-    const pdfTicketPath = path.resolve(__dirname, './temp/', pdfID);
+
+async function uploadQR(userID: string, timestamp: string): Promise<string> {
+    const pdfTicketPath = path.resolve(__dirname, './temp/', `${timestamp}.pdf`);
     const base64image = await fromPath(pdfTicketPath, {
         format: 'png',
         quality: 100,
@@ -77,18 +79,38 @@ async function uploadQR(userID: string, pdfID: string) {
     }
     const qrPath = path.resolve(__dirname, 'temp/qr.png')
     await QRCode.toFile(qrPath, qr.data);
-    await bucket.upload(qrPath, {destination: `users/${userID}/qr/${pdfID.replace('.pdf', '')}_${qr.data}.png`});
+    const resp = await bucket.upload(qrPath, {
+        destination: `users/${userID}/qr/${timestamp}_${qr.data}.png`,
+        metadata: {contentType: 'image/png'}
+    });
+    return (resp[0].metadata.mediaLink);
+}
+
+async function createNftMetadata(userId: string, timestamp: string, mediaLink: string): Promise<void>{
+    const metadata = {
+        name: `H4V  ticket #${timestamp}`,
+        description: 'Hack4Vilnius event ticket',
+        image_url: mediaLink,
+    }
+
+    const uploadStr = JSON.stringify(metadata);
+    const filePath = path.resolve(__dirname, `temp/${timestamp}.json`);
+    fs.writeFile(filePath, uploadStr, {encoding: 'utf8'}, () => {});
+    const resp = await bucket.upload(filePath, {
+        destination: `users/${userId}/nfts/${timestamp}.json`,
+        metadata: {contentType: 'text/json'},
+    })
 }
 
 async function main(userId: string) {
     await clearTemp();
-    const pdfName = await downloadLatestFile(userId);
-    if (pdfName === null) {
+    const timestamp = await downloadLatestFile(userId);
+    if (timestamp === null) {
         console.log('No pdf files found');
         return;
     }
-    await uploadQR(userId, pdfName);
-    //TODO: create nft metadata json and upload it to nfts/{userId}/{timestamp} folder
+    const mediaLink = await uploadQR(userId, timestamp);
+    await createNftMetadata(userId, timestamp, mediaLink);
 }
 
 const requestListener = async (req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -107,6 +129,8 @@ const requestListener = async (req: http.IncomingMessage, res: http.ServerRespon
 }
 
 http.createServer(requestListener).listen(5050);
+//run command
+//node --trace-warnings --experimental-modules --loader ts-node/esm ./backend/src/main.ts 
 
 
 
