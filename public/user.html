@@ -7,6 +7,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage-compat.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth__lt.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
@@ -22,27 +23,6 @@
       };
       firebase.initializeApp(config)
 
-      // FirebaseUI config.
-      var uiConfig = {
-        signInSuccessUrl: '/user.html',
-        signInOptions: [
-          // Leave the lines as is for the providers you want to offer your users.
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        ],
-        // tosUrl and privacyPolicyUrl accept either url string or a callback
-        // function.
-        // Terms of service url/callback.
-        tosUrl: 'https://hamsterwin.com/info/terms',
-        // Privacy policy url/callback.
-        privacyPolicyUrl: function() {
-          window.location.assign('https://hamsterwin.com/info/privacy');
-        }
-      };
-
-      // Initialize the FirebaseUI Widget using Firebase.
-      var ui = new firebaseui.auth.AuthUI(firebase.auth());
-      // The start method will wait until the DOM is loaded.
-      ui.start('#firebaseui-auth-container', uiConfig);
     </script>
 
     <!-- update the version number as needed -->
@@ -77,32 +57,91 @@
         body { border-top: 16px solid #ffa100; }
       }
     </style>
+
+    <script>
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          // User logged in already or has just logged in.
+          document.getElementById('user_id').innerText = user.uid;
+        } else {
+        }
+      });
+    </script>
   </head>
   <body>
     <div id="message">
       <h2>Sveiki atvyke!</h2>
       <h1>Go Vilnius eventualizer</h1>
+      <p>Firebase user id - <span id="user_id"></span></p>
 
-      <div id="firebaseui-auth-container"></div>
+      <div>
+        Upload Files<br />
+        <input type="file" id="files" multiple /><br /><br />
+        <button id="send">Upload</button>
+        <p id="uploading"></p>
+        <progress value="0" max="100" id="progress"></progress>
+      </div>
     </div>
-
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
   </body>
+
+  <script>
+    var files = [];
+    document.getElementById("files").addEventListener("change", function(e) {
+      files = e.target.files;
+      for (let i = 0; i < files.length; i++) {
+        console.log(files[i]);
+      }
+    });
+    
+    document.getElementById("send").addEventListener("click", function() {
+      //checks if files are selected
+      if (files.length != 0) {
+        //Loops through all the selected files
+        for (let i = 0; i < files.length; i++) {
+          //create a storage reference
+          var storage = firebase.storage().ref(`/users/${document.getElementById('user_id').innerText}/pdf/${(new Date()).getTime()}`);
+    
+          //upload file
+          var upload = storage.put(files[i]);
+    
+          //update progress bar
+          upload.on(
+            "state_changed",
+            function progress(snapshot) {
+              var percentage =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              document.getElementById("progress").value = percentage;
+            },
+    
+            function error() {
+              alert("error uploading file");
+            },
+    
+            function complete() {
+              document.getElementById(
+                "uploading"
+              ).innerHTML += `${files[i].name} upoaded <br />`;
+            }
+          );
+        }
+      } else {
+        alert("No file chosen");
+      }
+    });
+    
+    function getFileUrl(filename) {
+      //create a storage reference
+      var storage = firebase.storage().ref(filename);
+    
+      //get file url
+      storage
+        .getDownloadURL()
+        .then(function(url) {
+          console.log(url);
+        })
+        .catch(function(error) {
+          console.log("error encountered");
+        });
+    }
+    </script>
 </html>
