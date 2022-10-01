@@ -29,6 +29,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth__lt.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
@@ -42,57 +43,15 @@
         messagingSenderId: "948754742478",
         appId: "1:948754742478:web:33526dfa79f6414c32e49f"
       };
-      firebase.initializeApp(firebaseConfig)
-
-    </script>
-
-    <!-- update the version number as needed -->
-    <!-- <script defer src="/__/firebase/9.10.0/firebase-app-compat.js"></script> -->
-    <!-- include only the Firebase features as you need -->
-    <!-- <script defer src="/__/firebase/9.10.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-performance-compat.js"></script> -->
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <!-- <script defer src="/__/firebase/init.js?useEmulator=true"></script> -->
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-
-    <script>
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          // User logged in already or has just logged in.
-          document.getElementById('user_id').innerText = user.uid;
-        } else {
-        }
-      });
+      var app = firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
     </script>
   </head>
   <body>
     <div id="message">
       <h2>Sveiki atvyke!</h2>
-      <h1>Go Vilnius eventualizer</h1>
+      <h1>Go Vilnius Eventualizer</h1>
+      
       <p>Firebase user id - <span id="user_id"></span></p>
 
       <div>
@@ -145,66 +104,93 @@
       </div>
     </div>
 
-  </body>
+    <!-- Firebase -->
+    <script>
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          // User logged in already or has just logged in.
+          document.getElementById('user_id').innerText = user.uid;
 
-  <script>
-    var files = [];
-    document.getElementById("files").addEventListener("change", function(e) {
-      files = e.target.files;
-      for (let i = 0; i < files.length; i++) {
-        console.log(files[i]);
-      }
-    });
-    
-    document.getElementById("send").addEventListener("click", function() {
-      //checks if files are selected
-      if (files.length != 0) {
-        //Loops through all the selected files
-        for (let i = 0; i < files.length; i++) {
-          //create a storage reference
-          var storage = firebase.storage().ref(`/users/${document.getElementById('user_id').innerText}/pdf/${(new Date()).getTime()}`);
-    
-          //upload file
-          var upload = storage.put(files[i]);
-    
-          //update progress bar
-          upload.on(
-            "state_changed",
-            function progress(snapshot) {
-              var percentage =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              document.getElementById("progress").value = percentage;
-            },
-    
-            function error() {
-              alert("error uploading file");
-            },
-    
-            function complete() {
-              document.getElementById(
-                "uploading"
-              ).innerHTML += `${files[i].name} upoaded <br />`;
-            }
-          );
+          var docRef = db.collection("users").doc(user.uid);
+          docRef.get().then((doc) => {
+              if (doc.exists) {
+                  console.log("Document data:", doc.data());
+              } else {
+                db.collection("users").doc(user.uid).set({
+                  first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
+                  photo: null,
+                  visitedSections: []
+                });
+              }
+          }).catch((error) => {
+              console.log("Error getting document:", error);
+          });
+        } else {
+          window.location.href = '/index.html';
         }
-      } else {
-        alert("No file chosen");
-      }
-    });
-    
-    function getFileUrl(filename) {
-      //create a storage reference
-      var storage = firebase.storage().ref(filename);
-    
-      //get file url
-      storage
-        .getDownloadURL()
-        .then(function(url) {
-          console.log(url);
-        })
-        .catch(function(error) {
-          console.log("error encountered");
-        });
-    }
+      });
     </script>
+
+    <!-- Upload -->
+    <script>
+      var files = [];
+      document.getElementById("files").addEventListener("change", function(e) {
+        files = e.target.files;
+        for (let i = 0; i < files.length; i++) {
+          console.log(files[i]);
+        }
+      });
+      
+      document.getElementById("send").addEventListener("click", function() {
+        // Checks if files are selected
+        if (files.length != 0) {
+          // Loops through all the selected files
+          for (let i = 0; i < 1 /* files.length */; i++) {
+            // Create a storage reference
+            var storage = firebase.storage().ref(`/users/${document.getElementById('user_id').innerText}/pdf/${(new Date()).getTime()}`);
+      
+            // Upload file
+            var upload = storage.put(files[i]);
+      
+            // Update progress bar
+            upload.on(
+              "state_changed",
+              function progress(snapshot) {
+                var percentage =
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                document.getElementById("progress").value = percentage;
+              },
+      
+              function error() {
+                alert("Error uploading file");
+              },
+      
+              function complete() {
+                document.getElementById(
+                  "uploading"
+                ).innerHTML += `${files[i].name} upoaded <br />`;
+              }
+            );
+          }
+        } else {
+          alert("No file chosen");
+        }
+      });
+      
+      function getFileUrl(filename) {
+        // Create a storage reference
+        var storage = firebase.storage().ref(filename);
+      
+        // Get file url
+        storage
+          .getDownloadURL()
+          .then(function(url) {
+            console.log(url);
+          })
+          .catch(function(error) {
+            alert("Upload error encountered");
+          });
+      }
+    </script>
+  </body>
 </html>
