@@ -93,37 +93,56 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="ticket-upload">
+        <div class="row mt-2">
+          <div class="alert alert-secondary">Patekimas į renginį galimas tik įkėlus savo elektroninį bilietą</div>
+        </div>  
+        <div class="row">
+          <div class="col-8">
+            <input class="form-control" type="file" id="files" multiple />
+          </div>
+          <div class="col-3">
+            <button id="send" class="btn btn-primary">Upload</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <progress value="0" max="100" id="progress"></progress>
+          <div class="alert alert-primary" id="uploading">Įkelkite bilieto pdf failą</div>
+        </div>
+      </div>
+      <div id="event-info" class="pb-2" style="display: none">
+        <div class="row mt-2">
+          <div class="alert alert-primary" id="uploading">Sveikiname prisijungus prie renginio</div>
+        </div>
+        <div class="row mb-2">
+          „Hack4Vilnius“ – tai trijų dienų hakatonas, skirtas skatinti inovacijas Vilniaus mieste. Hakatono tikslas – generuoti idėjas, padedančias spręsti sostinės ir čia veikiančių verslų problemas, bei pasiūlyti alternatyvių ir inovatyvių jų sprendimo būdų.  Šiemet, jau penktą kartą ieškosime sprendimų, kurie padėtų paversti Vilnių dar sveikesniu, švaresniu, išmanesniu ir darnų judumą užtikrinančiu miestu.
 
-        </div>
-        <div id="ticket-upload">
-          <div class="row mt-2">
-            <div class="alert alert-secondary">Patekimas į renginį galimas tik įkėlus savo elektroninį bilietą</div>
-          </div>  
-          <div class="row">
-            <div class="col-8">
-              <input class="form-control" type="file" id="files" multiple />
-            </div>
-            <div class="col-3">
-              <button id="send" class="btn btn-primary">Upload</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <progress value="0" max="100" id="progress"></progress>
-            <div class="alert alert-primary" id="uploading">Įkelkite bilieto pdf failą</div>
-          </div>
-        </div>
-        <div id="event-info" style="display: none">
-          <div class="row mt-2">
-            <div class="alert alert-primary" id="uploading">Sveikiname prisijungus prie renginio</div>
+          <div class="alert alert-info" role="alert">
+            Wifi tinklas: <b>HamsterWifi</b><br />
+            Slaptažodis: <b>WeCanDoIt</b>
           </div>
         </div>
         <div class="row">
           <div class="card">
-            <div class="card-body pb-1 eventSections" style="padding-left: 5px; padding-right: 5px;">
-              <h5 class="card-header">Renginio zonos</h5>
-              <div id="loader"></div>
+            <div class="card-body" style="padding-left: 5px; padding-right: 5px;">
+              <h5 class="card-header">Sutikimas dėl jūsų fotografavimo/filmavimo</h5>
+
+              <img src="https://firebasestorage.googleapis.com/v0/b/qrhamsters-app.appspot.com/o/png_download.png?alt=media&token=26561d18-deb7-44ab-85a0-a62cf5ffcc20" />
+    
+              <form>
+                <button class="btn btn-info">Pasirašyti sutikimą el. parašu</button>
+              </form>
             </div>
           </div>      
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-body pb-1 eventSections" style="padding-left: 5px; padding-right: 5px;">
+            <h5 class="card-header">Renginio zonos</h5>
+            <div id="loader"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -158,6 +177,7 @@
         </div>
       </div>
     </div>
+  </div>
 
     <!-- Toasts -->
     <div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-0 start-0 hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
