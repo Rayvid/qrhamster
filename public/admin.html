@@ -1,122 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin panel</title>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renginio valdymo panelė</title>
 
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.4/build/global/luxon.min.js"></script>
-    <script src="js/utils.js"></script>
+  <!-- Begin theme -->
+  <link rel="stylesheet" href="./assets/vendor/fonts/boxicons.css" />
+  <link rel="stylesheet" href="./assets/vendor/css/core.css" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="./assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+  <link rel="stylesheet" href="./assets/css/demo.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
 
-    <link rel="stylesheet" href="css/admin.css" />
-    <link rel="stylesheet" href="css/styles.css" />
-    <style>
-      body {
-        background: #f5f5f9;
-        color: rgba(0, 0, 0, 0.87);
-        font-family: Roboto, Helvetica, Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
+  <!-- Helpers -->
+  <script src="./assets/vendor/js/helpers.js"></script>
+  <script src="./assets/js/config.js"></script>
+  
 
-    <script type="text/javascript">
-      const config = {
-        apiKey: "AIzaSyBe6QaZqUU5UNK8SdE3QAnQwFv6pXCpldw",
-        authDomain: "qrhamsters-app.firebaseapp.com",
-        projectId: "qrhamsters-app",
-        storageBucket: "qrhamsters-app.appspot.com",
-        messagingSenderId: "948754742478",
-        appId: "1:948754742478:web:33526dfa79f6414c32e49f",
-      };
-      firebase.initializeApp(config);
-    </script>
-  </head>
-  <body>
-    <div class="container">
-      <div class="card">
-        <div class="header">Renginio dalyviai</div>
-        <table class="attendees">
-          <div id="loader"></div>
-        </table>
+  <!-- Core JS -->
+  <script src="./assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="./assets/vendor/libs/popper/popper.js"></script>
+  <script src="./assets/vendor/js/bootstrap.js"></script>
+  <script src="./assets/vendor/js/menu.js"></script>
+  <script src="./assets/js/main.js"></script>
+  <script src="./assets/js/ui-modals.js"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- End of theme -->
+
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.4/build/global/luxon.min.js"></script>
+  <script src="js/rating.js"></script>
+  <script src="js/utils.js"></script>
+
+  <script type="text/javascript">
+    const firebaseConfig = {
+      apiKey: "AIzaSyBe6QaZqUU5UNK8SdE3QAnQwFv6pXCpldw",
+      authDomain: "qrhamsters-app.firebaseapp.com",
+      projectId: "qrhamsters-app",
+      storageBucket: "qrhamsters-app.appspot.com",
+      messagingSenderId: "948754742478",
+      appId: "1:948754742478:web:33526dfa79f6414c32e49f",
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <style>
+    .section-status{
+      color: #ff5e5e;
+      padding:5px;
+    }
+    .section-status.visited{
+      color: #40e23f;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+        <div class="card">
+          <div class="card-body pb-1 text-center">
+            <h5 class="card-title text-primary">Go Vilnius Eventualizer - Renginio valdymas</h5>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card mt-4">
+          <h5 class="card-header m-0 me-2 pb-3">Dalyvių statistika</h5>
+          <div class="card-body pb-1">
+            
+          </div>
+        </div>
+      </div>
+      <hr class="my-4">
+      <div class="row">
+        <div class="card">
+          <h5 class="card-header">Dalyviai</h5>
+          <div id="attendeesTable">
+            <div id="loader"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <script type="text/javascript">
-      const sections = [
+  </div>
+  <script>
+    const sections = [
         "Keynote",
         "Lunch",
         'Workshop "Legal"',
         "Lounge area",
         "Afterparty",
       ];
-      function field(name,value,classname=""){
-        return `
-          <div class="field ${classname}">
-            <div class="name">${name}</div>
-            <div class="value">${value}</div>
-          </div>
-        `;
-      }
+    const usersRef = firebase.firestore().collection("users");
+    usersRef.get().then((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      const usersRef = firebase.firestore().collection("users");
-      usersRef.get().then((snapshot) => {
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        document.querySelector("#loader").remove();
-        
-        const attendees = document.querySelector('.attendees');
-        data.forEach(({id,email,photo,visitedSections,...rest})=>{
-          attendees.innerHTML += `
-            <tr class="attendee">
-              <td class="section user-section">
-                <div class="section-content">
-                  <div class="user">
-                    <img class="photo" src="${photo ? photo : 'images/anon.webp'}" />
-                    <div class="data">
-                    ${field("Dalyvis",`
-                      <div><b>ID:</b> ${id}</div>
-                      ${email ? `<div><b>El paštas:</b> ${email}</div>` : ''}
-                    `)}
-                    ${rest.first_checkin_timestamp ? field("Pirma registracija",formatTimestamp(rest.first_checkin_timestamp.seconds)):""}
+      document.querySelector("#loader").remove();
+      console.log(data);
+      $('#attendeesTable').replaceWith(`
+      <div class="table-responsive text-nowrap">
+          <table class="table">
+            <thead class="table-light">
+              <tr>
+                <th>Dalyvis</th>
+                <th>Pirmoji registracija</th>
+                <th>Aplankytos zonos</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              ${data.map(attendee=>
+                `
+                <tr>
+                  <td>
+                    <div class="d-flex justify-content-start align-items-center user-name">
+                      <div class="avatar-wrapper">
+                        <div class="avatar avatar-sm me-3">
+                          <img src="${attendee.photo ? attendee.photo : 'images/anon.webp'}" alt="Nuotrauka" class="rounded-circle">
+                        </div>
+                      </div>
+                      <div class="d-flex flex-column">
+                        <a class="text-body text-truncate">
+                          <span class="fw-semibold">${attendee.displayName ?? attendee.id}</span>
+                        </a>
+                        ${attendee.email ? `<small class="text-muted">${attendee.email}</small>` : ""}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </td>
-              <td class="section flex">
-                ${field("Aplankytos zonos",`
-                <div class="sub-events">
-                    ${sections.map((section,index)=>{
-                      const attended = visitedSections?.find(visitedSection=>visitedSection.section === index+1);
-                      if(attended)
-                        return `<div class="chip success">
-                          <div class="fields inline">
-                            ${field("Zona",section)}
-                            ${field("Registracija",formatTimestamp(attended.timestamp.seconds))}
-                            ${attended.rating ? field("Vertinimas",`<div class="rating">${Array.from(Array(5)).map((_,idx)=>createStar(idx<attended.rating.rating ? "gold":undefined)).join("")}</div>`):""}
+                  </td>
+                  <td>${formatTimestamp(attendee.first_checkin_timestamp.seconds)}</td>
+                  <td>
+                    ${sections.map((section,idx)=>{
+                      let attendeeData = attendee.visitedSections.find(s=>s.section === idx+1);
+                      return `
+                        <div class="d-flex justify-content-left align-items-center mb-2">
+                          <div class="section-status ${attendeeData?"visited":""}">
+                            ${attendeeData ? `<i class='bx bxs-check-circle'></i>`:`<i class='bx bxs-x-circle'></i>`}
                           </div>
-                        </div>`;
-                                   
-                      else
-                        return `<div class="chip error">
-                          <div class="fields inline">
-                            ${field("Zona",section)}
-                            ${field("Registracija","-")}
+                          <div class="d-flex flex-column">
+                            <span class="text-truncate fw-bold">${section}</span>
+                            ${attendeeData ? `<small class="text-truncate text-muted">${formatTimestamp(attendeeData.timestamp.seconds)}</small>`:``}
                           </div>
-                        </div>`;
-                    }).join("")}
-                  </div>
-                `)}
-              </td>
-            </tr>
-          `;
-        })
-      });
-    </script>
-  </body>
+                          ${attendeeData?.rating ? `
+                            <div class="rating" style="margin-left:15px" ${attendeeData.rating.comment?`data-bs-toggle="tooltip"`:""} data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="" data-bs-original-title="<span>${attendeeData.rating?.comment}</span>">
+                              ${Array.from(Array(5)).map((_,idx)=>createStar(idx < attendeeData.rating.rating ? "gold":undefined)).join("")}
+                            </div>
+                          `:""}
+                        </div>
+                      `
+                    }
+                      
+                    ).join("")}
+                  </td>
+                </tr>
+                `
+              ).join("")}
+            </tbody>
+          </table>
+        </div>
+      `);
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      setTimeout(()=>{
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+      },5);
+    });
+  </script>
+</body>
 </html>
