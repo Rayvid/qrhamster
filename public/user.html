@@ -134,9 +134,7 @@
 
               <img src="https://firebasestorage.googleapis.com/v0/b/qrhamsters-app.appspot.com/o/png_download.png?alt=media&token=26561d18-deb7-44ab-85a0-a62cf5ffcc20" />
     
-              <form>
-                <button class="btn btn-info">Pasirašyti sutikimą el. parašu</button>
-              </form>
+              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#captchaModal">Pasirašyti sutikimą el. parašu</button>
             </div>
           </div>      
         </div>
@@ -182,6 +180,21 @@
       </div>
     </div>
   </div>
+
+  <!-- Captcha modal -->
+  <div class="modal fade" id="captchaModal" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Patvirtink, kad esi žmogus</h5>
+        </div>
+        <div class="modal-body" id="recaptcha">
+          sss
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- Toasts -->
     <div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-0 start-0 hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
