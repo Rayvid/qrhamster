@@ -65,13 +65,35 @@
   <body>
     <div class="content-wrapper">
       <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row">
-          <div class="card">
-            <div class="card-body pb-1 text-center">
-        <h5 class="card-title text-primary">Go Vilnius Eventualizer</h5>
-        <p style="display: none">Firebase user id - <span id="user_id"></span></p>
+      <div class="row">
+        <div class="card bg-primary bg-gradient">
+          <div class="card-body">
+            <div class="row text-center">
+
+      <h3 class="card-title text-primary" style="color: white !important">Go Vilnius Eventualizer</h3>
+      <p style="display: none">Firebase user id - <span id="user_id"></span></p>
+            
+            </div>
+            <div class="row text-left">
+
+      <div class="row">
+        <div class="col-2">
+          <img id="photo" />
+        </div>
+        <div class="col-2">&nbsp;</div>
+        <div class="col-8">
+          <span id="display_name" style="color: white !important"></span>
+          <form class="form-floating">
+            <input disabled="disabled" type="email" class="form-control" id="email" value="">
+            <label for="email">El. paštas</label>
+          </form>
+        </div>
+      </div>
+
             </div>
           </div>
+        </div>
+
         </div>
         <div id="ticket-upload">
           <div class="row mt-2">
@@ -167,7 +189,7 @@
       let selectedRating = 0;
       function setSections(data){
         $('.eventSections').find('#loader').remove()
-        if(!data.length) return $('.eventSections').append("Nuskaičius renginyje esančių zonų QR kodus, jos atsiras čia!");
+        if(!data.length) return $('.eventSections').append("<div class=\"alert alert-secondary\">Jūsų aplankytos renginio zonos atsiras čia - galėsite palikti atsiliepimus ir įvertinimą</div>");
         $('.eventSections').append(`
           <div class="table-responsive text-nowrap">
             <table class="table">  
@@ -249,9 +271,12 @@
       let userUid = null;
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          // User logged in already or has just logged in.
-          document.getElementById('user_id').innerText = user.uid;
           userUid = user.uid;
+
+          document.getElementById('user_id').innerText = userUid;
+          $("#photo").attr("src", user.photoURL);
+          $("#email").val(user.email);
+          $("#display_name").text(user.displayName);
 
           var visitedSections = [];
           var docRef = db.collection("users").doc(user.uid);
@@ -263,7 +288,9 @@
               } else {
                 setPromise = db.collection("users").doc(user.uid).set({
                   first_checkin_timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0),
-                  photo: null,
+                  photo: user.photoURL,
+                  email: user.email,
+                  displayName: user.displayName,
                   visitedSections: []
                 });
                 setSections([]);

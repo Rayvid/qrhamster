@@ -45,7 +45,7 @@
       firebase.initializeApp(firebaseConfig);
 
       let redirUrl = new URL(window.location);
-      if (redirUrl.pathname.indexOf('.html') > 0) {
+      if (redirUrl.pathname.indexOf('.html') > 0 || redirUrl.pathname.indexOf('localhost') < 0) {
         redirUrl.pathname = '/user.html';
       } else {
         redirUrl.pathname = '/user';
