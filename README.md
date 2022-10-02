@@ -15,6 +15,12 @@ Organizatoriai turi prieigą prie renginio valdymo aplinkos, kurioje matoma daly
 
 Demo: https://qrhamsters-app.web.app/
 
+Admin aplinkos demo: https://qrhamsters-app.web.app/admin.html
+
+*Admin demo aplinka yra desktop only*
+
 Demo video: https://youtu.be/4-TNtd1PmgQ
 
+## Sąsaja su kriptovaliutomis ir NFT
 
+Ateityje renginių organizatoriai taip pat galės įjungti funkcionalumą užregistruotų vartotojų bilietus įkelti į blockchain NFT pavidalu ir taip susieti bilietą su vartotojo blockchain pinigine. Tokie vartotojai renginiuose už įvairias paslaugas atsiskaitinės kriptovaliutomis iš susietos piniginės bei galės naudoti piniginę kaip raktą į renginio blockchain paslaugas.
