@@ -98,7 +98,7 @@
           </div>
         </div>
       </div>
-      <div id="ticket-upload">
+      <div id="ticket-upload" style="display:none">
         <div class="row mt-2">
           <div class="alert alert-secondary">Patekimas į renginį galimas tik įkėlus savo elektroninį bilietą</div>
         </div>  
@@ -352,7 +352,15 @@
               
 
               setPromise.then(() => {
-                //firebase.storage().ref(`/users/${user.uid}/pdf`);
+                const existingDocsRef = firebase.storage().ref().child(`/users/${user.uid}/pdf`);
+                existingDocsRef.listAll().then(d=>{
+                  if(d.items.length){
+                    window.showEventInfo();
+                  }
+                  else{
+                    $('#ticket-upload').show();
+                  }
+                });
                 if (section > 0 && section < 6) {
                   db.collection("users").doc(user.uid).get().then((doc) => {
                     let sections = doc.data().visitedSections || [];
