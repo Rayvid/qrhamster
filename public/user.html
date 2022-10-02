@@ -63,23 +63,47 @@
     </script>
   </head>
   <body>
-    <div id="message">
-      <h2>Sveiki atvyke!</h2>
-      <h1>Go Vilnius Eventualizer</h1>
-      
-      <p>Firebase user id - <span id="user_id"></span></p>
-
-      <div>
-        Upload Files<br />
-        <input type="file" id="files" multiple /><br /><br />
-        <button id="send">Upload</button>
-        <p id="uploading"></p>
-        <progress value="0" max="100" id="progress"></progress>
+    <div class="content-wrapper">
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+          <div class="card">
+            <div class="card-body pb-1 text-center">
+        <h5 class="card-title text-primary">Go Vilnius Eventualizer</h5>
+        <p style="display: none">Firebase user id - <span id="user_id"></span></p>
+            </div>
+          </div>
+        </div>
+        <div id="ticket-upload">
+          <div class="row mt-2">
+            <div class="alert alert-secondary">Patekimas į renginį galimas tik įkėlus savo elektroninį bilietą</div>
+          </div>  
+          <div class="row">
+            <div class="col-8">
+              <input class="form-control" type="file" id="files" multiple />
+            </div>
+            <div class="col-3">
+              <button id="send" class="btn btn-primary">Upload</button>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <progress value="0" max="100" id="progress"></progress>
+            <div class="alert alert-primary" id="uploading">Įkelkite bilieto pdf failą</div>
+          </div>
+        </div>
+        <div id="event-info" style="display: none">
+          <div class="row mt-2">
+            <div class="alert alert-primary" id="uploading">Sveikiname prisijungus prie renginio</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="card">
+            <div class="card-body pb-1 eventSections" style="padding-left: 5px; padding-right: 5px;">
+              <h5 class="card-header">Renginio zonos</h5>
+              <div id="loader"></div>
+            </div>
+          </div>      
+        </div>
       </div>
-    </div>
-    <div class="card eventSections">
-      <h5 class="card-header">Renginio zonos</h5>
-      <div id="loader"></div>
     </div>
 
     <!-- Rating modal -->
@@ -216,6 +240,12 @@
 
     <!-- Firebase -->
     <script>
+      function showEventInfo()
+      {
+        $("#ticket-upload").hide();
+        $("#event-info").show();
+      }
+
       let userUid = null;
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -306,7 +336,9 @@
               function complete() {
                 document.getElementById(
                   "uploading"
-                ).innerHTML += `${files[i].name} upoaded <br />`;
+                ).innerText = `Failas ${files[i].name} įkeltas`;
+
+                window.showEventInfo();
               }
             );
           }
