@@ -38,7 +38,7 @@
   <body>
     <div class="container">
       <div class="card">
-        <div class="header">Event attendees</div>
+        <div class="header">Renginio dalyviai</div>
         <table class="attendees">
           <div id="loader"></div>
         </table>
@@ -79,34 +79,34 @@
                   <div class="user">
                     <img class="photo" src="${photo ? photo : 'images/anon.webp'}" />
                     <div class="data">
-                    ${field("Attendee",`
+                    ${field("Dalyvis",`
                       <div><b>ID:</b> ${id}</div>
-                      ${email ? `<div><b>E-mail:</b> ${email}</div>` : ''}
+                      ${email ? `<div><b>El paštas:</b> ${email}</div>` : ''}
                     `)}
-                    ${rest.first_checkin_timestamp ? field("First check-in",formatTimestamp(rest.first_checkin_timestamp.seconds)):""}
+                    ${rest.first_checkin_timestamp ? field("Pirma registracija",formatTimestamp(rest.first_checkin_timestamp.seconds)):""}
                     </div>
                   </div>
                 </div>
               </td>
               <td class="section flex">
-                ${field("Visited sub-events",`
+                ${field("Aplankytos zonos",`
                 <div class="sub-events">
                     ${sections.map((section,index)=>{
                       const attended = visitedSections?.find(visitedSection=>visitedSection.section === index+1);
                       if(attended)
                         return `<div class="chip success">
                           <div class="fields inline">
-                            ${field("Sub-event",section)}
-                            ${field("Attended on",formatTimestamp(attended.timestamp.seconds))}
-                            ${attended.rating ? field("Rating",`<div class="rating">${Array.from(Array(5)).map((_,idx)=>createStar(idx<attended.rating.rating ? "gold":undefined)).join("")}</div>`):""}
+                            ${field("Zona",section)}
+                            ${field("Registracija",formatTimestamp(attended.timestamp.seconds))}
+                            ${attended.rating ? field("Vertinimas",`<div class="rating">${Array.from(Array(5)).map((_,idx)=>createStar(idx<attended.rating.rating ? "gold":undefined)).join("")}</div>`):""}
                           </div>
                         </div>`;
                                    
                       else
                         return `<div class="chip error">
                           <div class="fields inline">
-                            ${field("Sub-event",section)}
-                            ${field("Attended on","-")}
+                            ${field("Zona",section)}
+                            ${field("Registracija","-")}
                           </div>
                         </div>`;
                     }).join("")}
