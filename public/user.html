@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Welcome to Go Vilnius Eventualizer</title>
 
+    <script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
+
     <!-- Begin theme -->
     <link rel="stylesheet" href="./assets/vendor/fonts/boxicons.css" />
     <link rel="stylesheet" href="./assets/vendor/css/core.css" class="template-customizer-core-css" />
@@ -279,7 +281,7 @@
         },{
           merge:true
         })
-        location.reload();
+        window.location.reload();
        // const usersRef = db.collection('users')
       })
       $(function(){
@@ -341,7 +343,7 @@
                           section,
                           timestamp: new firebase.firestore.Timestamp((new Date()).getTime() / 1000, 0)
                         })
-                      });
+                      }).then(() => window.location.reload());
                     }
                   }).catch((error) => {
                     alert(error);
@@ -424,8 +426,12 @@
       }
     </script>
 
-    <!-- Firebase messaging -->
+    <!-- Firebase messaging & recaptcha -->
     <script>
+      window.setTimeout(() => window.grecaptcha.render('recaptcha', {
+          'sitekey' : '6LfS-UoiAAAAAK-byR5kJwdEyp8zpnt3PddqgH9B',
+          'theme' : 'light'
+        }), 2000);
       messaging.onMessage((payload) => {
         console.log('Message received. ', payload);
       });
