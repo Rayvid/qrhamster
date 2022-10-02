@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Go Vilnius Eventualizer</title>
+    <title>Hamster Event</title>
 
     <!-- Begin theme -->
     <link rel="stylesheet" href="./assets/vendor/fonts/boxicons.css" />
@@ -32,6 +32,12 @@
 
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth__lt.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+
+    <style>
+      .socials{
+        display:flex;
+      }
+    </style>
 
     <script type="text/javascript">
       const firebaseConfig = {
@@ -65,24 +71,6 @@
       // The start method will wait until the DOM is loaded.
       ui.start('#firebaseui-auth-container', uiConfig);
     </script>
-
-    <!-- update the version number as needed -->
-    <!-- <script defer src="/__/firebase/9.10.0/firebase-app-compat.js"></script> -->
-    <!-- include only the Firebase features as you need -->
-    <!-- <script defer src="/__/firebase/9.10.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/9.10.0/firebase-performance-compat.js"></script> -->
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <!-- <script defer src="/__/firebase/init.js?useEmulator=true"></script> -->
   </head>
   <body>
     <div class="content-wrapper">
@@ -91,10 +79,103 @@
           <div class="order-0">
             <div class="card">
               <div class="card-body pb-1 text-center">
-      <h5 class="card-title text-primary">Go Vilnius Eventualizer</h5>
-      <p class="mb-2">Tam, jog registruotis prie renginio jūs turite pirma prisijungti.</p>
-      <div id="firebaseui-auth-container"></div>
-      <p class="mt-2">(C)2022 Hack4Vilnius</p>
+                <h5 class="card-title text-primary">Hamster Event</h5>
+                <p class="mb-2">Tam, jog registruotis prie renginio jūs turite pirma prisijungti.</p>
+                <div id="firebaseui-auth-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="order-0">
+            <div class="card">
+              <div class="card-body pb-1 text-center">
+                <h5 class="card-title text-primary">QR Hamsters</h5>
+                <div class="row mt-4" style="justify-content:center">
+                  <div class="col-md-4">
+                    <div class="row">
+                      <a href="https://github.com/Rayvid/qrhamster" class="socials">
+                        <div class="d-flex mb-3">
+                          <div class="flex-shrink-0">
+                            <img src="assets/img/icons/brands/github.png" alt="github" class="me-3" height="30">
+                          </div>
+                          <div class="flex-grow-0" style="text-align:left">
+                              <h6 class="mb-0">Github</h6>
+                              <small class="text-muted">https://github.com/Rayvid/qrhamster</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="row mt-4">
+                      <a href="https://www.linkedin.com/in/gintautaskisonas/" class="socials">
+                        <div class="d-flex mb-3">
+                          <div class="flex-shrink-0">
+                            <img src="assets/img/icons/brands/linkedin.svg" alt="github" class="me-3" height="30">
+                          </div>
+                          <div class="flex-grow-0" style="text-align:left">
+                              <h6 class="mb-0">Gintautas Kišonas</h6>
+                              <small class="text-muted">https://www.linkedin.com/in/gintautaskisonas/</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="row">
+                      <a href="https://www.linkedin.com/in/lukaslukosevicius/" class="socials">
+                        <div class="d-flex mb-3">
+                          <div class="flex-shrink-0">
+                            <img src="assets/img/icons/brands/linkedin.svg" alt="github" class="me-3" height="30">
+                          </div>
+                          <div class="flex-grow-0" style="text-align:left">
+                              <h6 class="mb-0">Lukas Lukoševičius</h6>
+                              <small class="text-muted">https://www.linkedin.com/in/lukaslukosevicius/</small>
+
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="row">
+                      <a href="https://www.linkedin.com/in/tomas-varkavicius/" class="socials">
+                        <div class="d-flex mb-3">
+                          <div class="flex-shrink-0">
+                            <img src="assets/img/icons/brands/linkedin.svg" alt="github" class="me-3" height="30">
+                          </div>
+                          <div class="flex-grow-0" style="text-align:left">
+                              <h6 class="mb-0">Tomas Varkavičius</h6>
+                              <small class="text-muted">https://www.linkedin.com/in/tomas-varkavicius/</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="row">
+                      <a href="https://www.linkedin.com/in/nedas-mikoleika-316511201/" class="socials">
+                        <div class="d-flex mb-3">
+                          <div class="flex-shrink-0">
+                            <img src="assets/img/icons/brands/linkedin.svg" alt="github" class="me-3" height="30">
+                          </div>
+                          <div class="flex-grow-0" style="text-align:left">
+                              <h6 class="mb-0">Nedas Mikoleika</h6>
+                              <small class="text-muted">https://www.linkedin.com/in/nedas-mikoleika-316511201/</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="row">
+                      <a href="https://www.linkedin.com/in/adomas-alimas-7241b6252/">
+                        <div class="d-flex mb-3 ">
+                          <div class="flex-shrink-0">
+                            <img src="assets/img/icons/brands/linkedin.svg" alt="github" class="me-3" height="30">
+                          </div>
+                          <div class="flex-grow-0" style="text-align:left">
+                              <h6 class="mb-0">Adomas Alimas</h6>
+                              <small class="text-muted">https://www.linkedin.com/in/adomas-alimas-7241b6252/</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="mt-2">(C)2022 Hack4Vilnius</p>
               </div>
             </div>
           </div>
