@@ -147,7 +147,22 @@
           </div>
         </div>
       </div>
+
+
     </div>
+    <section id="basic-footer">
+      <footer class="footer bg-light">
+        <div class="container-fluid d-flex flex-md-row flex-column justify-content-between align-items-md-center gap-1 container-p-x py-3">
+          <div>
+            ©
+            Hamster Event, Hack4Vilnius
+          </div>
+          <div>
+            E-mail: partnerships@hamsterwin.com
+          </div>
+        </div>
+      </footer>
+    </section>
 
     <!-- Rating modal -->
     <div class="modal fade" id="rateModal" tabindex="-1" style="display: none;" aria-hidden="true">
@@ -317,6 +332,7 @@
 
           var visitedSections = [];
           var docRef = db.collection("users").doc(user.uid);
+          
           docRef.get().then((doc) => {
               let setPromise = Promise.resolve();
               if (doc.exists) {
@@ -333,7 +349,10 @@
                 setSections([]);
               }
 
+              
+
               setPromise.then(() => {
+                //firebase.storage().ref(`/users/${user.uid}/pdf`);
                 if (section > 0 && section < 6) {
                   db.collection("users").doc(user.uid).get().then((doc) => {
                     let sections = doc.data().visitedSections || [];
