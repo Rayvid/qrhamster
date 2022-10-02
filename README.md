@@ -17,8 +17,6 @@ Demo: https://qrhamsters-app.web.app/
 
 Admin aplinkos demo: https://qrhamsters-app.web.app/admin.html
 
-*Admin demo aplinka yra desktop only*
-
 Demo video: https://youtu.be/4-TNtd1PmgQ
 
 ## Sąsaja su kriptovaliutomis ir NFT
