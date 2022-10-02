@@ -6,7 +6,15 @@
     <title>Welcome to Go Vilnius Eventualizer</title>
 
     <script type="text/javascript">
-      location.href = "auth.html";
+
+      let redirUrl = new URL(window.location);
+      if (redirUrl.pathname.indexOf('.html') > 0 ||
+          redirUrl.hostname.indexOf('localhost') < 0) {
+        redirUrl.pathname = '/user.html';
+      } else {
+        redirUrl.pathname = '/user';
+      }
+      location.href = redirUrl;
     </script>
   </head>
   <body></body>
